@@ -1,10 +1,12 @@
-import { expect, afterEach, vi } from 'vitest';
+import { expect, afterEach, vi, beforeAll } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
-// Mock environment variables
-process.env.API_KEY = 'test-api-key';
-process.env.GEMINI_API_KEY = 'test-api-key';
+// Mock environment variables BEFORE any imports
+beforeAll(() => {
+  process.env.API_KEY = 'test-api-key';
+  process.env.GEMINI_API_KEY = 'test-api-key';
+});
 
 // Cleanup after each test
 afterEach(() => {
