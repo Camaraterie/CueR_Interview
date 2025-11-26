@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CueR.ai - The Journey</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              serif: ['Merriweather', 'serif'],
+              sans: ['Inter', 'sans-serif'],
+              display: ['Cinzel', 'serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+            colors: {
+              paper: '#fdfbf7',
+              'paper-dark': '#f5f2eb',
+              ink: '#2c3e50',
+              gold: '#c5a059',
+              'medical-blue': '#0f4c81',
+              'terminal-bg': '#0f172a',
+              'terminal-text': '#38bdf8',
+            },
+            boxShadow: {
+              'book': '0 20px 50px -12px rgba(0, 0, 0, 0.5)',
+              'spine': 'inset 20px 0 50px rgba(0,0,0,0.1)',
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+      body {
+        background-color: #1e293b;
+        background-image: radial-gradient(#334155 1px, transparent 1px);
+        background-size: 20px 20px;
+      }
+      /* Custom scrollbar for terminal feel */
+      .terminal-scroll::-webkit-scrollbar {
+        width: 8px;
+      }
+      .terminal-scroll::-webkit-scrollbar-track {
+        background: #1e293b; 
+      }
+      .terminal-scroll::-webkit-scrollbar-thumb {
+        background: #334155; 
+        border-radius: 4px;
+      }
+      .terminal-scroll::-webkit-scrollbar-thumb:hover {
+        background: #475569; 
+      }
+
+      /* --- The PLA Layer Line Texture --- */
+      /* This creates subtle horizontal striations across the background */
+      .pla-texture-light {
+        background-color: #f8fafc; /* Slate-50 base */
+        background-image: repeating-linear-gradient(
+          0deg,
+          rgba(0, 0, 0, 0.03) 0px,
+          rgba(0, 0, 0, 0.03) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+        /* Adds a subtle plastic sheen */
+        box-shadow: inset 0 0 100px rgba(255, 255, 255, 0.5);
+      }
+
+      .pla-texture-dark {
+        background-color: #0f172a; /* Slate-900 base */
+        background-image: repeating-linear-gradient(
+          0deg,
+          rgba(255, 255, 255, 0.04) 0px,
+          rgba(255, 255, 255, 0.04) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+        /* Deeper shadows for a "Galaxy Black" filament look */
+        box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.8);
+      }
+
+      /* --- The "Raised Filament" Text Effect (Skeuomorphism) --- */
+      /* Light Mode: Chiseled plastic look - Using darker gray for contrast on light bg */
+      .text-raised-light {
+        color: #475569; /* Slate-600 */
+        text-shadow:
+          1px 1px 1px rgba(0, 0, 0, 0.2),  /* Bottom-right shadow for depth */
+          -1px -1px 0px rgba(255, 255, 255, 0.8); /* Top-left highlight for edge definition */
+      }
+
+      /* Dark Mode: Glowing bioluminescent filament */
+      .text-raised-dark {
+        color: #a5f3fc; /* Cyan-200 (The glowing core) */
+        text-shadow:
+          0 0 5px rgba(34, 211, 238, 0.6), /* Subtle surrounding glow */
+          2px 2px 2px rgba(0, 0, 0, 0.9);   /* deep hard shadow for physical presence */
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
