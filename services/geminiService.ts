@@ -78,14 +78,15 @@ const fileToPart = async (file: File): Promise<{ inlineData: { data: string; mim
 
 export const askChris = async (
   history: { role: 'user' | 'model'; text: string }[],
+  apiKey: string,
   customInstruction?: string
 ): Promise<string> => {
-  if (!process.env.API_KEY) {
-    return "[WARN]I'd love to answer, but my neural link (API Key) seems to be disconnected.[/WARN]";
+  if (!apiKey) {
+    return "Please enter your Gemini API key to start the conversation.";
   }
 
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const ai = new GoogleGenAI({ apiKey });
     
     const contents = history.map(msg => ({
       role: msg.role,
@@ -108,14 +109,15 @@ export const askChris = async (
 };
 
 export const evaluateInterview = async (
-  history: { role: 'user' | 'model'; text: string }[]
+  history: { role: 'user' | 'model'; text: string }[],
+  apiKey: string
 ): Promise<boolean> => {
-  if (!process.env.API_KEY) return false;
+  if (!apiKey) return false;
   // Don't evaluate if the conversation is too short
   if (history.length < 3) return false;
 
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const ai = new GoogleGenAI({ apiKey });
     const analysisPrompt = `
       Analyze the following interview conversation between a User (Interviewer) and the Candidate (Model).
       
@@ -152,11 +154,11 @@ export const evaluateInterview = async (
   }
 };
 
-export const generatePersonaFromResume = async (file: File): Promise<string> => {
-  if (!process.env.API_KEY) throw new Error("No API Key");
+export const generatePersonaFromResume = async (file: File, apiKey: string): Promise<string> => {
+  if (!apiKey) throw new Error("No API Key provided");
 
   const filePart = await fileToPart(file);
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey });
 
   // Phase 1: Security Check
   const securityPrompt = `

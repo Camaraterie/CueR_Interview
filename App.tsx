@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { askChris, evaluateInterview, generatePersonaFromResume } from './services/geminiService';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Sparkles, 
-  BookOpen, 
-  Cpu, 
-  Activity, 
+import {
+  ChevronLeft,
+  ChevronRight,
+  Sparkles,
+  BookOpen,
+  Cpu,
+  Activity,
   Send,
   Code,
   Globe,
@@ -16,7 +16,8 @@ import {
   FileText,
   Terminal,
   Sun,
-  Moon
+  Moon,
+  Settings
 } from 'lucide-react';
 
 // --- Types ---
@@ -240,15 +241,24 @@ const CtaPage = ({ title, text }: { title: string, text: string }) => (
 );
 
 const BackCover = ({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean; setIsDarkMode: (v: boolean) => void }) => {
+  const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
   const [question, setQuestion] = useState('');
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [isInterviewPassed, setIsInterviewPassed] = useState(false);
   const [isProcessingResume, setIsProcessingResume] = useState(false);
   const [customPersona, setCustomPersona] = useState<string | null>(null);
-  
+  const [showApiKeyInput, setShowApiKeyInput] = useState(!apiKey);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (apiKey) {
+      localStorage.setItem('gemini_api_key', apiKey);
+      setShowApiKeyInput(false);
+    }
+  }, [apiKey]);
 
   useEffect(() => {
     if (chatEndRef.current) {
@@ -268,8 +278,8 @@ const BackCover = ({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean; setIsDa
     setLoading(true);
     
     // Get response from current persona
-    const response = await askChris(newHistory, customPersona || undefined);
-    
+    const response = await askChris(newHistory, apiKey, customPersona || undefined);
+
     const modelMsg: ChatMessage = { role: 'model', text: response };
     const finalHistory = [...newHistory, modelMsg];
     setChatHistory(finalHistory);
@@ -277,7 +287,7 @@ const BackCover = ({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean; setIsDa
 
     // If not yet unlocked, check if the user has passed the interview
     if (!isInterviewPassed && !customPersona) {
-      const passed = await evaluateInterview(finalHistory);
+      const passed = await evaluateInterview(finalHistory, apiKey);
       if (passed) {
         setIsInterviewPassed(true);
         // Subtle hint in chat that something changed
@@ -294,7 +304,7 @@ const BackCover = ({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean; setIsDa
     setChatHistory(prev => [...prev, { role: 'model', text: `[TECH]Analyzing ${file.name} for malicious patterns...[/TECH]` }]);
     
     try {
-      const newSystemInstruction = await generatePersonaFromResume(file);
+      const newSystemInstruction = await generatePersonaFromResume(file, apiKey);
       setCustomPersona(newSystemInstruction);
       setChatHistory(prev => [
         ...prev, 
@@ -342,6 +352,15 @@ const BackCover = ({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean; setIsDa
           </p>
           
           <div className="flex gap-2">
+            {/* API Key Settings */}
+            <button
+               onClick={() => setShowApiKeyInput(!showApiKeyInput)}
+               className={`p-1 rounded transition-colors ${isDarkMode ? 'text-gray-400 hover:bg-slate-700' : 'text-gray-500 hover:bg-gray-200'}`}
+               title="API Key Settings"
+            >
+               <Settings size={14} />
+            </button>
+
             {/* Theme Toggle */}
             <button
                onClick={() => setIsDarkMode(!isDarkMode)}
@@ -385,7 +404,34 @@ const BackCover = ({ isDarkMode, setIsDarkMode }: { isDarkMode: boolean; setIsDa
             </div>
           </div>
         </div>
-        
+
+        {/* API Key Input */}
+        {showApiKeyInput && (
+          <div className={`p-3 border-b ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gray-50 border-gray-200'}`}>
+            <label className={`block text-[10px] font-bold uppercase mb-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+              Gemini API Key
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="password"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="Enter your API key"
+                className={`flex-1 px-3 py-2 text-xs font-mono rounded border ${isDarkMode ? 'bg-slate-900 border-slate-600 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+              />
+              <button
+                onClick={() => setShowApiKeyInput(false)}
+                className={`px-3 py-2 text-xs font-bold rounded ${isDarkMode ? 'bg-cyan-600 text-white hover:bg-cyan-700' : 'bg-medical-blue text-white hover:bg-blue-700'}`}
+              >
+                Save
+              </button>
+            </div>
+            <p className={`text-[9px] mt-2 ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>
+              Get your free API key at <a href="https://ai.google.dev" target="_blank" rel="noopener noreferrer" className="underline">ai.google.dev</a>
+            </p>
+          </div>
+        )}
+
         {/* Chat History */}
         <div className={`flex-1 overflow-y-auto p-3 space-y-3 min-h-[150px] font-mono text-xs terminal-scroll ${isDarkMode ? 'bg-terminal-bg text-gray-300' : 'bg-white text-ink'}`}>
           {chatHistory.length === 0 && (
